@@ -15,7 +15,6 @@ RUN npm install --ignore-scripts
 
 COPY . .
 RUN npm run build
-RUN php artisan key:generate --env=production --force || true
 
 
 FROM php:8.3-fpm-alpine AS production
@@ -30,20 +29,20 @@ RUN apk add --no-cache \
     unzip \
     && docker-php-ext-install pdo_mysql gd zip pcntl opcache
 
-COPY --from=composer-build /app /var/www/html
-COPY --from=node-build /app/public /var/www/html/public
+WORKDIR /var/www/html
+
+COPY . .
+COPY --from=composer-build /app/vendor ./vendor
+COPY --from=node-build /app/public/build ./public/build
 
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
 
-RUN mkdir -p /var/www/html/storage/framework/{sessions,views,cache} \
-    && mkdir -p /var/www/html/storage/logs \
-    && mkdir -p /var/www/html/bootstrap/cache \
+RUN mkdir -p storage/framework/{sessions,views,cache} \
+    && mkdir -p storage/logs \
+    && mkdir -p bootstrap/cache \
     && chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/storage \
-    && chmod -R 775 /var/www/html/bootstrap/cache
-
-WORKDIR /var/www/html
+    && chmod -R 775 storage bootstrap/cache
 
 EXPOSE 80
 
