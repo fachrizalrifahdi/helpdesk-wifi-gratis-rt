@@ -1,9 +1,14 @@
-FROM composer:2 AS build
+FROM composer:2 AS composer-build
 
 WORKDIR /app
 
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts
+
+
+FROM node:22-alpine AS node-build
+
+WORKDIR /app
 
 COPY package.json package-lock.json ./
 RUN npm install --ignore-scripts
@@ -25,8 +30,8 @@ RUN apk add --no-cache \
     unzip \
     && docker-php-ext-install pdo_mysql gd zip pcntl opcache
 
-COPY --from=build /app /var/www/html
-COPY --from=build /app/vendor /var/www/html/vendor
+COPY --from=composer-build /app /var/www/html
+COPY --from=node-build /app/public /var/www/html/public
 
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
