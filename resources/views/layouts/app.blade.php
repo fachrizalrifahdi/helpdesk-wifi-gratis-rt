@@ -99,7 +99,7 @@
 
     <footer class="bg-white border-t border-blue-100 py-8">
         <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-sm text-slate-500">&copy; {{ date('Y') }} Helpdesk WiFi RT. Semua Hak Dilindungi.</p>
+            <p class="text-sm text-slate-500">&copy; {{ date('Y') }} Kelas 33 Kelompok 2</p>
         </div>
     </footer>
     <script>
