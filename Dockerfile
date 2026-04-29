@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 
-FROM php:8.3-fpm-alpine AS production
+FROM php:8.4-fpm-alpine AS production
 
 RUN apk add --no-cache \
     nginx \
